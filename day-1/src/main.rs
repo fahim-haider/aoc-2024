@@ -16,15 +16,30 @@ fn parse_input_file(input_file: &str) -> (Vec<i32>, Vec<i32>){
     return (list1, list2);
 }
 
+fn calculate_difference(vec1: &mut Vec<i32>, vec2: &mut Vec<i32>) -> Vec<i32>{
+    vec1.sort();
+    vec2.sort();
+
+    for element in vec1:
+    
+}
+
 fn main() {
     // The task is split into parts: 
     // 1. Read the input file and fill in arrays
     
     let (mut vec1,mut vec2) = parse_input_file("src/input.txt");
 
-    println!("vec1[0]: {} \t vec2[0]: {}", vec1[0],vec2[0]);
+    println!("After parsing:\nvec1[0]: {} \t vec2[0]: {}", vec1[0],vec2[0]);
 
-    // 2. Calculate the difference between the arrays
+    // 2. Sort arrays and calculate the difference between them in a new array
+
+    let mut result = calculate_difference(&mut vec1, &mut vec2);
+
+    println!("After calculations:\nvec1[0]: {} \t vec2[0]: {} \t result[0]: {}", 
+                vec1[0],vec2[0],result[0]);
+
+
 }
 
 /* Some notes!
