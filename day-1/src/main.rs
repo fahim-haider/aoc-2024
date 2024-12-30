@@ -16,28 +16,35 @@ fn parse_input_file(input_file: &str) -> (Vec<i32>, Vec<i32>){
     return (list1, list2);
 }
 
-fn calculate_difference(vec1: &mut Vec<i32>, vec2: &mut Vec<i32>) -> Vec<i32>{
+fn calculate_total_difference(vec1: &mut Vec<i32>, vec2: &mut Vec<i32>) -> (Vec<i32>, i32) {
     vec1.sort();
     vec2.sort();
 
-    for element in vec1:
-    
+    let mut result: Vec<i32> = vec![];
+    let mut sum: i32 = 0;
+
+    for i in 0..vec1.len() {
+        let difference: i32 = (vec1[i]-vec2[i]).abs();
+        sum += difference;
+        result.push(difference);
+    }
+
+    return (result, sum);
 }
 
 fn main() {
-    // The task is split into parts: 
-    // 1. Read the input file and fill in arrays
+    // Read the input file and fill in arrays
     
     let (mut vec1,mut vec2) = parse_input_file("src/input.txt");
 
     println!("After parsing:\nvec1[0]: {} \t vec2[0]: {}", vec1[0],vec2[0]);
 
-    // 2. Sort arrays and calculate the difference between them in a new array
+    // Sort arrays and calculate the difference between them in a new array
 
-    let mut result = calculate_difference(&mut vec1, &mut vec2);
+    let (mut result, mut sum) = calculate_total_difference(&mut vec1, &mut vec2);
 
-    println!("After calculations:\nvec1[0]: {} \t vec2[0]: {} \t result[0]: {}", 
-                vec1[0],vec2[0],result[0]);
+    println!("After calculations:\nvec1[0]: {}\t vec2[0]: {}\t result[0]: {}\t sum: {}", 
+                vec1[0],vec2[0],result[0], sum);
 
 
 }
