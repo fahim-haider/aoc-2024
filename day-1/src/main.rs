@@ -21,14 +21,12 @@ fn calculate_total_difference(vec1: &mut Vec<i32>, vec2: &mut Vec<i32>) -> (Vec<
     vec1.sort();
     vec2.sort();
 
-    let mut result: Vec<i32> = vec![];
-    let mut sum: i32 = 0;
+    let result: Vec<i32> = vec1.iter()
+                                    .zip(vec2.iter())
+                                    .map(|(a,b)| (a-b).abs())
+                                    .collect();
 
-    for i in 0..vec1.len() {
-        let difference: i32 = (vec1[i]-vec2[i]).abs();
-        sum += difference;
-        result.push(difference);
-    }
+    let sum: i32 = result.iter().sum();
 
     return (result, sum);
 }
@@ -85,4 +83,10 @@ fn main() {
     - String is mutable, and its size is not known at compile time
     - unwrap returns the actual value from a result or option type
     - split text returns an interator interestingly
+    - Hashmaps are incredible
+    - match keyword lets us modify contents inside its lambda function
+    - copied returns a copy of the Option but without the &
+    - zip creates a tuple of two iterators... (iter1, iter2)
+    - map applies a lambda (?) function to each pair of the iterators (|<params>| <function>)
+    - collect stores the result of the map operation into a Vec<i32>
 */
