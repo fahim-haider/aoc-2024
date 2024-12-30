@@ -18,23 +18,30 @@ fn count_safe_reports(list: Vec<Vec<i32>>) -> i32 {
     let mut safe_count: i32 = 0;
 
     for report in list.iter() {
-        if report.is_sorted_by(|a,b| a <= b) 
-        || report.is_sorted_by(|a,b| a >= b) {
-            /*for level in report.is_sorted() {
-
+        if report.windows(2).all(|w| (w[1] - w[0]).abs() <= 3 && (w[1] - w[0]).abs() >= 1) {
+            if report.is_sorted_by(|a,b| a < b) 
+            || report.is_sorted_by(|a,b| a > b) {
+                safe_count += 1;
+            } else {
+                for element in 0..report.len() {
+                    let mut clone = report.clone();
+                    clone.remove(element);
+                    if clone.is_sorted_by(|a,b| a < b) 
+                    || clone.is_sorted_by(|a,b| a > b) {
+                        safe_count += 1;
+                        break;
+                    }
+                }
             }
-            */
-            safe_count += 1;
         }
     }
-
     safe_count
 }
 
 fn main() {
     // Part 1:
     // Read the input file and fill in arrays
-    let mut list = parse_input_file("src/input.txt");
+    let list = parse_input_file("src/input.txt");
     println!("After parsing:\tvec1[0]: {}", list[0][0]);
 
     // Find safe reports
