@@ -3,41 +3,18 @@ extern crate regex;
 use std::fs;
 use regex::Regex;
 
-fn parse_input_file (input_file: &str) -> Vec<String> {
-    let contents = fs::read_to_string(input_file);
-
-    contents.unwrap().lines()
-            .map(|a| a.parse::<String>().unwrap())
-            .collect::<Vec<String>>()
-}
-
 // Finds valid mul commands and pushes them to be multiplied
-fn find_valid_mul (memory_content: &String) -> Vec<String>{
-    let substr: Vec<String> = memory_content.clone()
-                                    .split_inclusive(')')
-                                    .map(|a| a.to_string())
-                                    .filter(|b| b.contains("mul("))
-                                    .map(|mut c| {
-                                                    c.replace_range(..(c.find("mul").unwrap()), "");
-                                                    c = c.replace("mul", "");
-                                                    if c.contains("mul") {
-                                                        c.replace_range(..(c.find("mul").unwrap()), "");
-                                                    }
-                                                    c
-                                                })
-                                    .filter(|d| {
-                                                    d.clone()
-                                                        .replace("(", "")
-                                                        .replace(")", "")
-                                                        .split(',')
-                                                        .all(|e| e.chars().all(|f| f.is_digit(10)))
-                                                })
-                                    .collect();
+fn find_valid_mul (memory_content: &String, re: &Regex) -> Vec<String>{
+    let mat = re.find_iter(memory_content)
+                        .map(|s| s.as_str())
+                        .map(|s| s.to_string())
+                        .collect::<Vec<_>>();
 
-    for (index, value) in substr.iter().enumerate() {
+    for (index, value) in mat.iter().enumerate() {
         println!("After parsing, substr[{index}]: {}", value);
     }
-    substr
+    
+    mat
 }
 
 fn calculate_product (command: String) -> i32{
@@ -65,22 +42,23 @@ fn calculate_product (command: String) -> i32{
 fn main() {
     let content = fs::read_to_string("src/input.in").unwrap();
 
-    let re = Regex::new(r"mul\(\d{1,3},\d{1,3}\)").unwrap();
+    let re1 = Regex::new(r"mul\(\d{1,3},\d{1,3}\)").unwrap();
 
     // Part 1: Find valid mul operations and calculate the sum of the products
-    let valid_cmds = content.iter()
-                                    .flat_map(|line| find_valid_mul(line))
-                                    .collect::<Vec<_>>();
-    println!("After cleaning up cmds: substr[0]: {}", valid_cmds.len());
+    let valid_cmds = find_valid_mul(&content, &re1);
 
-    let sum:i32 = valid_cmds.iter()
-                            .map(|cmd| calculate_product(cmd.clone()))
-                            .sum();
-    println!("Total sum of products: \t{sum}\ntest of [0]:{}", calculate_product(valid_cmds[0].to_string()));
+    let sum: i32 = valid_cmds.iter()
+                        .map(|c| calculate_product(c.clone()))
+                        .sum();
+
+    println!("Part 1 result = {sum}");
+
+    // Part 2: include functionality for do and don't!
+
 }
 
 /*
-    - Could have done this way more efficiently using RegEx...
+    - Could have done this way more efficiently using RegEx... SO I DID
 
 
 */
