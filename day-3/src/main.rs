@@ -5,21 +5,18 @@ use regex::Regex;
 
 // Finds valid mul commands and pushes them to be multiplied
 fn find_valid_mul (memory_content: &String, re: &Regex) -> Vec<String>{
-    let mat = re.find_iter(memory_content)
+    re.find_iter(memory_content)
                         .map(|s| s.as_str())
                         .map(|s| s.to_string())
-                        .collect::<Vec<_>>();
-   
-    mat
+                        .collect::<Vec<_>>()
 }
 
+// Calculates product of the command if do() is enabled (flag is set to true)
 fn calculate_product (command: String, flag: &mut bool) -> i32{
     if command.contains("don't") {
         *flag = false;
-        0
     } else if command.contains("do") {
         *flag = true;
-        0
     }
     else {
         if flag == &mut true {
@@ -30,30 +27,22 @@ fn calculate_product (command: String, flag: &mut bool) -> i32{
                         .map(|s| s.to_string())
                         .collect::<Vec<String>>();
 
-            let mut number1 = 0;
-            let mut number2 = 0;
-
             if cleaned.len() == 2 {
-            number1 = cleaned[0].trim().parse::<i32>().unwrap();
-            number2 = cleaned[1].trim().parse::<i32>().unwrap();
+                let number1 = cleaned[0].trim().parse::<i32>().unwrap_or(0);
+                let number2 = cleaned[1].trim().parse::<i32>().unwrap_or(0);
+                return number1*number2;
             }
             else {
-            println!("Something went wrong!");
+                println!("Something went wrong!");
             }
-
-            number1*number2
-        }
-        else {
-            0
         }
     }
+    0
 }
 
 fn main() {
     let content = fs::read_to_string("src/input.in").unwrap();
-
     let re = Regex::new(r"(mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\))").unwrap();
-
     let mut flag: bool = true;
 
     // Part 1: Find valid mul operations and calculate the sum of the products
@@ -64,7 +53,8 @@ fn main() {
                         .sum();
     println!("Part 1 result = {sum}");
 
-    // Part 2: include functionality for do and don't!
+    // Part 2: include functionality for do and don't using a flag! If true, that means
+    // the last control statement was do(), if false, then the last control statement was don't()
     let sum2: i32 = valid_cmds.iter()
                         .map(|c| calculate_product(c.clone(), &mut flag))
                         .sum();
@@ -73,6 +63,7 @@ fn main() {
 
 /*
     - Could have done this way more efficiently using RegEx... SO I DID
-
-
+    - Planned out my functions well, i think 
+    - Some map and filter functions were tricky, but this was good practice
+    - I definitely need to learn about pointers and passing as reference in Rust
 */
