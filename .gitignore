@@ -1,2 +1,6 @@
 # Ignores the target folder produced by Cargo
 **target
+
+# Ignore input files!
+*.in
+*.txt

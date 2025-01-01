@@ -12,24 +12,22 @@ fn search_matrix (rows: usize, columns: usize, matrix: &Vec<Vec<char>>) -> i32 {
     for row in 0..rows {
         for column in 0..columns {
             if matrix[row][column] == 'X' {
-                search_diagonally(row, column, matrix, &count);
-                search_vertically(row, column, matrix, &count);
-                search_horizontally(row, column, matrix, &count);
+                search_diagonally(row, column, matrix, &mut count);
+                search_vertically(row, column, matrix, &mut count);
+                search_horizontally(row, column, matrix, &mut count);
             }
         }
     }
     count
 }
 
-fn search_diagonally(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: &i32) {
-    if row <= 2 {
-        for element in 0..matrix.len() {
-            if matrix[row][element] == 'X' {
-                
-            }
-        }
+fn search_diagonally(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: &mut i32) {
+    if row <= 2 &&  {
+        
     } else if column <= 2 {
-
+        if (matrix[row][column], matrix[row+1][column+1], matrix[row+2][column+2], matrix[row+3][column+3]) == ('X','M','A','S') {
+            *count += 1;
+        }
     } else if row >= matrix.len() - 2 {
 
     } else if column >= matrix.len() - 2 {
@@ -39,11 +37,11 @@ fn search_diagonally(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: 
     }
 }
 
-fn search_vertically(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: &i32) {
+fn search_vertically(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: &mut i32) {
 
 }
 
-fn search_horizontally(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: &i32) {
+fn search_horizontally(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: &mut i32) {
 
 }
 
