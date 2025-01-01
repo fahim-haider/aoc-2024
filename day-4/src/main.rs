@@ -2,6 +2,7 @@ use itertools::Itertools;
 use std::fs;
 use ndarray::Array2;
 
+// Contains all possible directions that the program can 'step'
 const DIRECTIONS: &[(i32,i32)] = &[
     // Straight
     (0,-1),
@@ -30,6 +31,7 @@ fn parse_input_file(input_file: &str) -> Array2<char> {
     Array2::<char>::from_shape_vec((row_size, col_size), flat_vec).unwrap()
 }
 
+// Find all possible steps from the current point in the matrix
 fn find_steps(point: &(i32,i32), num_steps: usize) -> Vec<(i32,i32)> {
     let mut vec: Vec<(i32,i32)> = vec![(0,0)];
     for i in 1..num_steps {
@@ -40,36 +42,55 @@ fn find_steps(point: &(i32,i32), num_steps: usize) -> Vec<(i32,i32)> {
     vec
 }
 
-fn search_matrix (matrix: &Array2<char>, pattern: &str) -> i32 {
+// Finds the number of times that pattern occurs in the given matrix
+fn count_num_pattern (matrix: &Array2<char>, pattern: &str) -> usize {
     // Find possible directions we should go
     let directions = DIRECTIONS.iter()
                         .map(|d| find_steps(d, pattern.len()))
                         .collect::<Vec<_>>();
 
-    let mut count: i32 = 0;
+    let mut count: usize = 0;
     let (row_size, col_size) = (matrix.shape()[0],matrix.shape()[1]);
     for (row, col) in (0..row_size).cartesian_product(0..col_size) {
         // Find valid positions for this element
-        let valid_steps = directions.iter()
+        let valid_directons = directions.iter()
                                 .map(|d| 
-                                        d.iter()
-                                        .map(|(r, c)| (row as i32 + r, col as i32 + c))) 
+                                    d.iter()
+                                    .map(|(r, c)| (row as i32 + r, col as i32 + c))) 
                                 .filter(|d| 
                                     d.clone().all(|(r, c)| r >= 0 && r < row_size as i32
                                         && c >= 0 && c < col_size as i32))
                                 .map(|d| d.collect::<Vec<_>>())
                                 .collect::<Vec<_>>();
 
-        valid_steps.windows(4).map(f)
+        // Find the strings that the valid directions contain
+        let strings = valid_directons.iter()
+                                .map(|d| 
+                                    d.iter().map(|(r,c)| matrix[(*r as usize,*c as usize)]))
+                                .map(|c| c.collect::<Vec<_>>())
+                                .collect::<Vec<_>>();
+        
+        // Find the strings that match the pattern and count them
+        count += strings.iter().filter(|str| **str == pattern.chars().collect::<Vec<_>>()).count();
     }
     count
+}
+
+// Find characters that are in an X pattern
+fn count_X_pattern () {
+
 }
 
 fn main() {
     // Parse input file into a 2D array/matrix
     let content = parse_input_file("src/input.in");
-    println!("{}", content[[0,5]]);
+    println!("Character at index[0][5] is: {}", content[[0,5]]);
 
-    // Part 1: Find all instances of XMAS patterns
-    search_matrix(&content, "XMAS");
+    // Part 1: Find the number of instances of XMAS patterns
+    let count = count_num_pattern(&content, "XMAS");
+    println!("{count}");
+
+    // Part 2: Find the number of instances that have MAS in as X pattern
+    let count = count_X_pattern(&content, "XMAS");
+    println!("{count}");
 }
