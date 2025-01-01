@@ -1,5 +1,3 @@
-extern crate regex;
-
 use std::fs;
 use regex::Regex;
 

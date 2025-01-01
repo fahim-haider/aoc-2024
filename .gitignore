@@ -4,3 +4,4 @@
 # Ignore input files!
 *.in
 *.txt
+*.lock

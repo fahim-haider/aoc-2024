@@ -1,10 +1,13 @@
 use std::fs;
+use grid::Grid;
 
-fn parse_input_file(input_file: &str) -> Vec<Vec<char>> {
+fn parse_input_file(input_file: &str) -> Grid<char> {
     let contents = fs::read_to_string(input_file).unwrap();
-    contents.lines()
+
+    Grid::parse(contents)
+    /*contents.lines()
             .map(|st| st.chars().collect())
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>()*/
 }
 
 fn search_matrix (rows: usize, columns: usize, matrix: &Vec<Vec<char>>) -> i32 {
@@ -22,7 +25,7 @@ fn search_matrix (rows: usize, columns: usize, matrix: &Vec<Vec<char>>) -> i32 {
 }
 
 fn search_diagonally(row: usize, column: usize, matrix: &Vec<Vec<char>>, count: &mut i32) {
-    if row <= 2 &&  {
+    if row <= 2 && column <= 2 {
         
     } else if column <= 2 {
         if (matrix[row][column], matrix[row+1][column+1], matrix[row+2][column+2], matrix[row+3][column+3]) == ('X','M','A','S') {
