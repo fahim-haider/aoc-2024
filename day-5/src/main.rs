@@ -68,9 +68,6 @@ fn sum_valid_pages(rules: Vec<Vec<i32>>, reports: Vec<Vec<i32>>) -> i32 {
                         .filter(|&report| is_valid_report(report, &mut hash))
                         .collect();
 
-    
-    println!("{:?}, {:?}", valid_reports[0].len(), valid_reports[0][valid_reports[0].len() / 2]);
-
     let _temp: Vec<&Vec<i32>> = valid_reports.iter()
                         .map(|&report| {sum_mid_page += report[report.len()/2]; 
                                     report})
@@ -78,29 +75,56 @@ fn sum_valid_pages(rules: Vec<Vec<i32>>, reports: Vec<Vec<i32>>) -> i32 {
     sum_mid_page
 }
 
+fn sort_report(report: &Vec<i32>, hash: &mut HashMap<i32, Vec<i32>>) -> Vec<i32>{
+    let mut sorted: Vec<i32> = report.clone();
+    let mut is_sorted: bool = false;
+
+    while !is_sorted {
+        is_sorted = true;
+        for page in 1..sorted.len() {
+            let prev_elements: Vec<i32> = sorted[..page].iter().cloned().collect();
+            let current: i32 = sorted[page];
+            if let Some(rules) = hash.get(&current) {
+                for (j, prev_el) in prev_elements.iter().enumerate() {
+                    if rules.contains(&prev_el) {
+                        sorted.swap(page, j);
+                        is_sorted = false;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    sorted
+}
+
 fn sum_invalid_pages(rules: Vec<Vec<i32>>, reports: Vec<Vec<i32>>) -> i32 {
     let mut hash: HashMap<i32, Vec<i32>> = internalize_rules(rules);
-    let mut sum_mid_page: i32 = 0;
+    let mut sum_sorted: i32 = 0;
 
-    let valid_reports:Vec<&Vec<i32>> = reports.iter()
+    // Filter out the valid reports, so we only sort the invalid reports
+    let invalid_reports:Vec<&Vec<i32>> = reports.iter()
                         .filter(|&report| !is_valid_report(report, &mut hash))
                         .collect();
 
-    
-    println!("{:?}, {:?}", valid_reports[0].len(), valid_reports[0][valid_reports[0].len() / 2]);
-
-    let _temp: Vec<&Vec<i32>> = valid_reports.iter()
-                        .map(|&report| {sum_mid_page += report[report.len()/2]; 
+    let _temp: Vec<Vec<i32>> = invalid_reports.iter()
+                        .map(|&report| sort_report(report, &mut hash))
+                        .map(|report| {sum_sorted += report[report.len()/2]; 
                                     report})
                         .collect();
-    sum_mid_page
+
+    sum_sorted
 }
 
 fn main() {
     // Split the input files into two vectors, rules and pages
     let (rules, reports) = parse_input_file("src/input.in");
 
-    // Part 1: Check which pages are valid
-    let sum_mid_page = sum_valid_pages(rules.clone(), reports);
-    println!("{sum_mid_page}");
+    // Part 1: Sum the middle value of valid pages
+    let sum_mid_page = sum_valid_pages(rules.clone(), reports.clone());
+    println!("Part1: {sum_mid_page}");
+
+    // Part 1: Sum the middle value of incorrect pages after sorting
+    let sum_sorted = sum_invalid_pages(rules.clone(), reports.clone());
+    println!("Part2: {sum_sorted}");
 }
