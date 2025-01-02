@@ -146,7 +146,7 @@ fn main() {
 }
 /*
     - Not considering that all returns true if strings is empty took hours off my life lool
-    - Learned allot about grids and how they are more efficient than 2D vectors
+    - Learned alot about grids and how they are more efficient than 2D vectors
     - More practice on map, filter, all!
     - Learned to use the directions constant rather than hardcoding the possible points
 */
