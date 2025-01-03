@@ -60,6 +60,6 @@ fn main() {
     to modularize code in Rust to try both methods!
     - Learned Ordering to simplify this challenge with the help of online tutorials
     - Learned more about Arrays in Rust
-    RESULTS:
-    HashMaps took 74 ms and Arrays + Ordering took 1 ms!!
+    RESULTS: (time taken for both parts)
+    HashMaps took 74 ms, but Arrays + Ordering took 1 ms!!
 */
