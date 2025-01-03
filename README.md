@@ -8,6 +8,6 @@ Day 2 - filter, all, any, collect to write shorter and more readable code
 
 Day 3 - flat_map, passing variables as reference, RegEx, global variables in Rust
 
-Day 4 - constants for directions, Grids, more practice on map, filter and all
+Day 4 - constants for directions, Grids/Arrays, more practice on map, filter and all
 
-Day 5 - HashSet, code modularity, basic sorting algorithm, Ordering
+Day 5 - HashSet, code modularity, basic sorting algorithm, Ordering strategy, Arrays, performance analysis

@@ -1,37 +1,4 @@
-use std::fs;
 use std::collections::{HashMap, HashSet};
-
-// Split the input file into the rules and reports
-fn parse_input_file(file: &str) -> (Vec<Vec<i32>>, Vec<Vec<i32>>) {
-    let contents = fs::read_to_string(file).unwrap();
-
-    let lines: Vec<&str> = contents.lines()
-                                .collect();
-
-    // lines already removes \n, so we check for an empty string to find an empty line
-    let mut iterator = lines.split(|line| *line == "");
-
-    // convert to String because ownership needs to be transferred
-    // convert to a vector of i32 after splitting
-    let rules: Vec<Vec<i32>> = iterator.next()
-                    .unwrap_or(&[])
-                    .iter()
-                    .map(ToString::to_string)
-                    .map(|rule| rule.split("|")
-                        .map(|a| a.parse::<i32>()
-                                .unwrap()).collect::<Vec<_>>())
-                    .collect();
-    let reports: Vec<Vec<i32>> = iterator.next()
-                    .unwrap_or(&[])
-                    .iter()
-                    .map(ToString::to_string)
-                    .map(|str| str.split(',')
-                                        .map(|num| num.parse::<i32>().unwrap())
-                                        .collect())
-                    .collect();
-    
-    (rules,reports)
-}
 
 // Return a HashMap with the key set to an i32 and its value is a vector 
 // with all the i32s that the key should be less than
@@ -123,10 +90,7 @@ fn sum_invalid_pages(rules: Vec<Vec<i32>>, reports: Vec<Vec<i32>>) -> i32 {
     sum_sorted
 }
 
-pub fn try_hashing() {
-    // Split the input files into two vectors, rules and pages
-    let (rules, reports) = parse_input_file("src/input.in");
-
+pub fn try_hashing(rules: Vec<Vec<i32>>, reports: Vec<Vec<i32>>) {
     // Part 1: Sum the middle value of valid pages
     let sum_mid_page = sum_valid_pages(rules.clone(), reports.clone());
     println!("Part1: {sum_mid_page}");
