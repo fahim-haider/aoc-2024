@@ -14,4 +14,4 @@ Day 5 - HashSet, code modularity, basic sorting algorithm, Ordering strategy, Ar
 
 Day 6 - tuples, enums, structs, optimizing code logic
 
-Day 7 - ?!?!?!
+Day 7 - enums, match statements, used larger sized ints and unsigned ints, RECURSION!

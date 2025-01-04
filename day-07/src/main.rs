@@ -1,11 +1,10 @@
 use std::fs;
-use std::ops::Mul;
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
 struct Equation {
-    result: i64,
-    operands: Vec<i64>
+    result: u64,
+    operands: Vec<u64>
 }
 
 #[derive(Clone, Debug)]
@@ -25,11 +24,11 @@ fn parse_eqns (file: &str) -> Vec<Equation>{
     for line in contents.lines() {
         let mut iter = line.split(':');
         let result = iter.next().unwrap()
-                .parse::<i64>().unwrap_or(0);
+                .parse::<u64>().unwrap_or(0);
         let operands = iter.next().unwrap()
                 .split_whitespace()
-                .map(|opr| opr.parse::<i64>().unwrap())
-                .collect::<Vec<i64>>();
+                .map(|opr| opr.parse::<u64>().unwrap())
+                .collect::<Vec<u64>>();
         equations.push(Equation {result, operands});
     }
     equations
@@ -63,10 +62,42 @@ fn is_valid_formula (eqn: &Equation) -> bool {
         for i in 0..formula.len() {
             match formula[i] {
                 Add => result += operands[i+1],
-                Multiply => result = result * operands[i+1],
+                Multiply => result *= operands[i+1],
                 Concat => {
-                    let concatenated = format!("{}{}",result,operands[i+1]);
-                    result = concatenated.parse::<i64>().unwrap();
+                    let b_digits: u32 = ((operands[i+1]+1) as f64).log10().ceil() as u32;
+                    let power: u64 = 10_u64.pow(b_digits);
+                    result = result*power + operands[i+1];
+                },
+            };
+        }
+        //println!("Result for {:?}: {:?}", formula, result);
+        if result == target {
+            //println!("VALID WHEN {:?}", formula);
+            return true;
+        }
+    }
+    result == target
+}
+
+// TODO:
+fn is_valid_formula_recursive (eqn: &Equation) -> bool {
+    let target = eqn.result;
+    let operands = &eqn.operands;
+    let mut combinations: Vec<Operators> = Vec::new();
+    let mut formulas: Vec<Vec<Operators>> = Vec::new();
+    create_combinations(&mut combinations, operands.len()-1, &mut formulas);
+    //println!("Possible formulas for {:?}: {:?}", target, formulas);
+    let mut result = 0;
+    for formula in formulas.clone() {
+        result = operands[0];
+        for i in 0..formula.len() {
+            match formula[i] {
+                Add => result += operands[i+1],
+                Multiply => result *= operands[i+1],
+                Concat => {
+                    let b_digits: u32 = ((operands[i+1]+1) as f64).log10().ceil() as u32;
+                    let power: u64 = 10_u64.pow(b_digits);
+                    result = result*power + operands[i+1];
                 },
             };
         }
@@ -82,10 +113,18 @@ fn is_valid_formula (eqn: &Equation) -> bool {
 fn main() {
     let start_time = Instant::now();
     let test = parse_eqns("src/input.in");
-    let sum: i64 = test.iter()
-                            .filter(|eqn| is_valid_formula((&eqn).clone()))
+    let sum: u64 = test.iter()
+                            .filter(|&eqn| is_valid_formula(&eqn.clone()))
                             .map(|e| e.result).sum();
     let duration = start_time.elapsed();
     println!("Part 2: {:?}", sum);
     println!("Time taken for Part 2 = {:?}", duration);
 }
+/* 
+
+
+
+RESULTS:
+Part 1: 289.8ms (including input parsing!!)
+Part 2: ~16s
+*/
