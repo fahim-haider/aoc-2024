@@ -92,8 +92,8 @@ fn time_to_brute_force (mut base_map: &mut [[char; MAP_SIZE]; MAP_SIZE],
 }
 
 fn main() {
-    let (mut map, guard) = create_map("src/input.in");
     let start_time = Instant::now();
+    let (mut map, guard) = create_map("src/input.in");
     let (_is_loop,mut step_pos) = 
         count_guard_positions(&mut map, &mut guard.clone(), (-1,-1));
     let duration = start_time.elapsed();
@@ -106,3 +106,15 @@ fn main() {
     println!("Part 2: {:?}", count);
     println!("Time taken for Part 2 = {:?}", duration);
 }
+/*
+Very very difficult day!
+    - Learned alot about enums, structs again
+    - Needed lots of hints like:
+        - using HashSet to store all unique points
+        - checking corner case where multiple turns are required
+        - ensuring that initial spot of guard is included in hashset
+    - Worked alot with tuples which helped greatly
+    RESULTS:
+        Part 1: 5.98 ms to create the array and parse through the guard's steps
+        Part 2: 10.88 s(!) to find all possible obstruction locations
+*/

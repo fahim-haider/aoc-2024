@@ -11,3 +11,7 @@ Day 3 - flat_map, passing variables as reference, RegEx, global variables in Rus
 Day 4 - constants for directions, Grids/Arrays, more practice on map, filter and all
 
 Day 5 - HashSet, code modularity, basic sorting algorithm, Ordering strategy, Arrays, performance analysis
+
+Day 6 - tuples, enums, structs, optimizing code logic
+
+Day 7 - ?!?!?!
