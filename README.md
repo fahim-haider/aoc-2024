@@ -15,3 +15,5 @@ Day 5 - HashSet, code modularity, basic sorting algorithm, Ordering strategy, Ar
 Day 6 - tuples, enums, structs, optimizing code logic
 
 Day 7 - enums, match statements, used larger sized ints and unsigned ints, RECURSION!
+
+Day 8 - structs to simplify points in grid, hashset for unique elements, impl for struct functions

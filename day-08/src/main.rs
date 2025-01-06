@@ -42,6 +42,7 @@ impl AntiNode {
     }
 }
 
+// TODO: complete this using recursion?!?!?!
 fn get_resonant_anti_nodes (p1: &AntennaPoint, p2: &AntennaPoint, set: &mut HashSet<AntiNode>) {
     let distance = (p2.r - p1.r, p2.c - p1.c);
     // holds displacement in one direction... will be incremented in a loop
@@ -147,7 +148,6 @@ fn main() {
     println!("Time taken for Part 2 = {:?}", duration);
 }
 /*
-
 RESULTS:
 Part 1: 265, solved in 1.12 ms!!!
 Part 2: 962, solved in 1.49 ms!
