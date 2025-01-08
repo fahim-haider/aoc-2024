@@ -4,37 +4,71 @@ use std::time::Instant;
 #[derive(Clone, Debug)]
 struct Block {
     file_id: i32,
-    size: u32,
-    index: usize
+    position: usize
 }
 
-fn create_empty_block (size: u32, index: usize) -> Block {
-    Block {file_id: -1, size, index}
-}
-fn create_filled_block (file_id: i32, size: u32, index: usize) -> Block {
-    Block {file_id, size, index}
+impl Block {
+    fn calc_checksum (self) -> i32 {
+        let checksum = self.file_id * (self.position as i32);
+        checksum
+    }
 }
 
-fn create_map (file: &str) -> (Vec<Block>, Vec<usize>) {
-    let mut map: Vec<Block> = Vec::new();
+fn create_empty_block (position: usize) -> Block {
+    Block {file_id: -1, position}
+}
+fn create_filled_block (file_id: i32, position: usize) -> Block {
+    Block {file_id, position}
+}
+
+fn create_map (file: &str) -> (Vec<Vec<Block>>, Vec<usize>) {
+    let mut map: Vec<Vec<Block>> = Vec::new();
     let mut free_map: Vec<usize> = Vec::new();
     let contents = fs::read_to_string(file).unwrap();
     let mut count_id = 0;
+    let mut position = 0;
 
     for(index,ch) in contents.char_indices() {
         let size = ch.to_digit(10).unwrap();
-        if index % 2 == 0 { // If even index, file!
-            map.push(create_filled_block(count_id, size, index));
+        let mut temp: Vec<Block> = Vec::new();
+        for i in 0..size {
+            if index % 2 == 0 { // If even index, file!
+                temp.push(create_filled_block(count_id, position));
+            } else { // Else, info about free space
+                temp.push(create_empty_block(position));
+                free_map.push(map.len()-1);
+            }
+            position += 1;
+        }
+        map.push(temp);
+        if index % 2 == 0 {
             count_id += 1;
-        } else { // Else, info about free space
-            map.push(create_empty_block(size, index));
-            free_map.push(map.len()-1);
         }
     }
     (map,free_map)
 }
 
-fn disk_fragmenter (map: &mut Vec<Block>, free_map: &mut Vec<usize>) -> i64{
+// assumes that the indices it receives are valid to swap (fragment size < hole size)
+fn swap_fragments (map: &mut Vec<Vec<Block>>, free_map: &mut Vec<usize>, 
+    fragment_index: usize, hole_index: usize) {
+        if map[fragment_index].size == map[hole_index].size {
+            map.swap(fragment_index, hole_index);
+            free_map[hole_index] = fragment_index; 
+        } else { // case: hole size and fragment size are not equal
+            // swap...
+            map.swap(fragment_index, hole_index);
+            // create hole next to fragment index
+
+            // shorten size of hole after swapping to match fragment size
+
+            // update hole list
+
+
+        }
+
+}
+
+fn disk_fragmenter (map: &mut Vec<Vec<Block>>, free_map: &mut Vec<usize>) -> i64{
     let mut checksum: i64 = 0;
     let mut rev_index = map.len()-1;
     let mut forw_hole_index = 0;
@@ -66,6 +100,7 @@ fn main() {
     //println!("Part 1: map: {:?}", map);
     println!("Time taken for Part 1 = {:?}", duration);
     let start_time = Instant::now();
+    //let checksum = disk_fragmenter(&mut map, &mut free_map);
     let duration = start_time.elapsed();
     //println!("Part 2: {:?}", sum);
     println!("Time taken for Part 2 = {:?}", duration);
