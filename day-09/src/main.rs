@@ -2,79 +2,49 @@ use std::fs;
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
-struct Block {
-    file_id: i32,
-    position: usize
+struct Partition {
+    blocks: Vec<i32>,
+    size: u32,
+    start_index: u32
 }
 
-impl Block {
-    
-    fn calc_checksum (self) -> i32 {
-        let checksum = self.file_id * (self.position as i32);
-        checksum
-    }
-
-
+impl Partition {
     fn is_empty (self) -> bool {
-        if self.file_id == -1 {
-            true
-        }
-        else {
-            false
-        }
-    }
-
-    // Creates an empty block that combines contiguous blocks?
-    fn join_free_space (self, left: &mut Block, right: &mut Block) -> Block {
-        let mut start_pos= self.position;
-        let mut size = self.size;
-        if left.clone().is_empty() {
-            start_pos = left.position;
-            size += left.size;
-        }
-        if right.clone().is_empty() {
-            size += right.size;
-        }
-        create_empty_block(size, start_pos)
+        self.blocks.iter().all(|a| *a == -1)
     }
 }
 
-fn create_empty_block (size: usize, position: usize) -> Block {
-    Block {file_id: -1, size, position}
+fn create_empty_block (size: u32, start_index: u32) -> Partition {
+    Partition {blocks: vec![-1; size as usize], size, start_index}
 }
-fn create_filled_block (file_id: i32, size: usize, position: usize) -> Block {
-    Block {file_id, size, position}
+fn create_filled_block (file_id: i32, size: u32, start_index: u32) -> Partition {
+    Partition {blocks: vec![file_id; size as usize], size, start_index}
 }
 
-fn create_map (file: &str) -> (Vec<Vec<Block>>, Vec<usize>) {
-    let mut map: Vec<Vec<Block>> = Vec::new();
+fn create_map (file: &str) -> (Vec<Partition>, Vec<usize>) {
+    let mut map: Vec<Partition> = Vec::new();
     let mut free_map: Vec<usize> = Vec::new();
     let contents = fs::read_to_string(file).unwrap();
     let mut count_id = 0;
-    let mut position = 0;
+    let mut count_index = 0;
 
     for(index,ch) in contents.char_indices() {
         let size = ch.to_digit(10).unwrap();
-        let mut temp: Vec<Block> = Vec::new();
-        for i in 0..size {
-            if index % 2 == 0 { // If even index, file!
-                temp.push(create_filled_block(count_id, position));
-            } else { // Else, info about free space
-                temp.push(create_empty_block(position));
-                free_map.push(map.len()-1);
-            }
-            position += 1;
-        }
-        map.push(temp);
-        if index % 2 == 0 {
+        if index % 2 == 0 { // If even index, file!
+            map.push(create_filled_block(count_id, size, count_index));
             count_id += 1;
+        } else { // Else, info about free space
+            map.push(create_empty_block(size, count_index));
+            free_map.push(map.len()-1);
         }
+        count_index += size;
     }
+    println!("{:?}", free_map);
     (map,free_map)
 }
 
 // assumes that the indices it receives are valid to swap (fragment size < hole size)
-fn swap_fragments (map: &mut Vec<Vec<Block>>, free_map: &mut Vec<usize>, 
+fn swap_fragments (map: &mut Vec<Partition>, free_map: &mut Vec<usize>, 
     fragment_index: usize, hole_index: usize) {
         if map[fragment_index].size == map[hole_index].size {
             map.swap(fragment_index, hole_index);
@@ -93,37 +63,39 @@ fn swap_fragments (map: &mut Vec<Vec<Block>>, free_map: &mut Vec<usize>,
 
 }
 
-fn disk_fragmenter (map: &mut Vec<Vec<Block>>, free_map: &mut Vec<usize>) -> i64{
+fn disk_fragmenter (map: &mut Vec<Partition>, free_map: &mut Vec<usize>) -> i64{
     let mut checksum: i64 = 0;
     let mut rev_index = map.len()-1;
     let mut forw_hole_index = 0;
     while forw_hole_index < free_map.len() 
     && rev_index > free_map[forw_hole_index] { // While free spaces exist
-        if map[rev_index].file_id == 1 {
+        if map[rev_index].blocks[0] == -1 {
             let hole = free_map[forw_hole_index];
-            map.swap(rev_index, hole);
+            swap_fragments(map, free_map, rev_index, hole);
             //println!("Swapping! {:?}, {:?}", rev_index, hole);
+            //map.swap(rev_index, hole);
             forw_hole_index += 1;
         }
         rev_index -= 1;
     }
     for (index, block) in map.iter().enumerate() {
-        if block.file_id != -1 {
-            checksum += (index as i32 * block.file_id) as i64;
+        let file_id = block.blocks[0];
+        if file_id != -1 {
+            checksum += (index as i32 * file_id) as i64;
         }
     }
     checksum
 }
 
 fn main() {
-    let start_time = Instant::now();
+    //let start_time = Instant::now();
     let (mut map, mut free_map) = create_map("src/input.in");
-    println!("Part 1: map: {:?}", map);
+    println!("map: {:?}", map);
     //let checksum = disk_fragmenter(&mut map, &mut free_map);
-    let duration = start_time.elapsed();
+    //let duration = start_time.elapsed();
     //println!("Part 1: {:?}", checksum);
     //println!("Part 1: map: {:?}", map);
-    println!("Time taken for Part 1 = {:?}", duration);
+    //println!("Time taken for Part 1 = {:?}", duration);
     let start_time = Instant::now();
     //let checksum = disk_fragmenter(&mut map, &mut free_map);
     let duration = start_time.elapsed();
