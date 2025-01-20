@@ -8,17 +8,42 @@ struct Block {
 }
 
 impl Block {
+    
     fn calc_checksum (self) -> i32 {
         let checksum = self.file_id * (self.position as i32);
         checksum
     }
+
+
+    fn is_empty (self) -> bool {
+        if self.file_id == -1 {
+            true
+        }
+        else {
+            false
+        }
+    }
+
+    // Creates an empty block that combines contiguous blocks?
+    fn join_free_space (self, left: &mut Block, right: &mut Block) -> Block {
+        let mut start_pos= self.position;
+        let mut size = self.size;
+        if left.clone().is_empty() {
+            start_pos = left.position;
+            size += left.size;
+        }
+        if right.clone().is_empty() {
+            size += right.size;
+        }
+        create_empty_block(size, start_pos)
+    }
 }
 
-fn create_empty_block (position: usize) -> Block {
-    Block {file_id: -1, position}
+fn create_empty_block (size: usize, position: usize) -> Block {
+    Block {file_id: -1, size, position}
 }
-fn create_filled_block (file_id: i32, position: usize) -> Block {
-    Block {file_id, position}
+fn create_filled_block (file_id: i32, size: usize, position: usize) -> Block {
+    Block {file_id, size, position}
 }
 
 fn create_map (file: &str) -> (Vec<Vec<Block>>, Vec<usize>) {
@@ -105,8 +130,8 @@ fn main() {
     //println!("Part 2: {:?}", sum);
     println!("Time taken for Part 2 = {:?}", duration);
 }
-/*
 
+/*
 Results:
 Part 1: 6242766523059, solved in 7 ms
 Part 2: 
